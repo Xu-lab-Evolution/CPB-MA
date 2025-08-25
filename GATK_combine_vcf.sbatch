@@ -13,6 +13,7 @@
 # Load necessary modules
 module load bio/GATK/4.6.0.0-GCCcore-13.3.0-Java-17.0.1
 module load bio/tabixpp/1.1.0-GCC-11.2.0   # To use bgzip and tabix for compression and indexing
+module load bio/BCFtools/1.14-GCC-11.2.0
 
 # Define the list of chromosomes you want to process in parallel
 chromosomes=("chr1" "chr2" "chr3" "chr4" "chr5" "chr6" "chr7" "chr8" "chr9" "chr10" "chr11" "chr12" "chr13" "chr14" "chr15" "chr16" "chr17" "chr18")   # Adjust according to your data
@@ -23,5 +24,7 @@ echo "Merging all filtered VCF files..."
 gatk MergeVcfs \
   $(for chr in "${chromosomes[@]}"; do echo "-I ${chr}.flt.pass.vcf.gz"; done) \
   -O Chr_all.flt.pass.vcf.gz
+
+bcftools view --min-ac=1 --max-ac=1 --threads 2 --no-update -Oz Chr_all.flt.pass.vcf.gz > Chr_all.flt.pass.AC1.vcf.gz
 
 echo "Merging complete."
