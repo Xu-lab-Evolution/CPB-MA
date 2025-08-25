@@ -89,13 +89,4 @@ gatk SelectVariants \
     -O "${INTERVAL}.flt.pass.vcf.gz" \
     --exclude-filtered
 
-# Final MergeVcfs for last task in array
-if [ "$SLURM_ARRAY_TASK_ID" -eq 19 ]; then
-    echo "Merging all filtered VCFs..."
-    gatk MergeVcfs \
-        $(for chr in $(seq 1 18); do echo "-I chr${chr}.flt.pass.vcf.gz"; done) \
-        -I contigs.flt.pass.vcf.gz \
-        -O All_filtered_variants.vcf.gz
-fi
-
 echo "Workflow complete for array task $SLURM_ARRAY_TASK_ID."
